@@ -1,3 +1,4 @@
+require('dotenv').config()
 const express = require('express');
 const bodyParser = require('body-parser');
 const { graphqlExpress, graphiqlExpress } = require('graphql-server-express');
@@ -7,12 +8,13 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
 const schema = require('./schemas/rootSchema');
 
-const mongoUri = 'mongodb://ajinomoto:ajinomoto@ds161304.mlab.com:61304/graphql-passport-auth';
+const mongoUri = process.env.MONGO_URI;
+const nodePort = process.env.NODE_PORT;
 mongoose.connect(mongoUri);
 
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', () => console.log('connected.'));
+db.once('open', () => console.log('mongo connected.'));
 
 mongoose.Promise = global.Promise;
 
@@ -31,5 +33,5 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use('/graphql', bodyParser.json(), graphqlExpress(req => ({ schema, context: req })));
-app.use('/graphiql', graphiqlExpress({endpointURL: '/graphql'}));
-app.listen(4000, () => console.log('Now browse to localhost:4000/graphiql'));
+app.use('/graphiql', graphiqlExpress({ endpointURL: '/graphql' }));
+app.listen(nodePort, () => console.log(`Now browse to http://localhost:${nodePort}/graphiql`));
