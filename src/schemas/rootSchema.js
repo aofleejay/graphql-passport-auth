@@ -3,7 +3,7 @@ const { signup } = require('../services/auth')
 
 const typeDefs = [`
   type Query {
-    hello: String
+    user: User
   }
 
   type Mutation {
@@ -11,8 +11,8 @@ const typeDefs = [`
   }
 
   type User {
+    id: String!
     email: String!
-    password: String!
   }
 
   schema {
@@ -23,8 +23,8 @@ const typeDefs = [`
 
 const resolvers = {
   Query: {
-    hello(root) {
-      return 'world';
+    user(root, args, context) {
+      return context.user
     }
   },
   Mutation: {
